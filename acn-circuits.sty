@@ -1,0 +1,469 @@
+
+%% LaTeX style sheet to provide AQA GCSE 2011 circuit symbols
+%% 2015-02-18
+%%
+%% Andrew C. Norman
+%% Bishop Heber High School
+%% Chester Road, MALPAS. SY14 8JD
+
+\ProvidesPackage{acn-particlestyle}
+
+\RequirePackage{tikz}
+
+%resistor
+\tikzstyle{every resistor}=[circuit symbol size = width 4 height 1.2]
+
+
+%diode
+\tikzset{
+  circuit declare annotation={encapsulated}{0pt}{
+    let
+      \p{@aux@ne}=($(\tikzlastnode.north east)-(\tikzlastnode.center)$),
+      \n{@aux@ne}={veclen(\x{@aux@ne},\y{@aux@ne})}
+    in [label distance=\n{@aux@ne}]
+      (\tikzlastnode.center) edge[to path={circle[radius={1.5*\n{@aux@ne}}]}] ()
+  }
+}
+\tikzstyle{every diode}=[circuit symbol size = width 2 height 2,encapsulated]
+
+
+%led:
+\tikzset{
+    circuit declare symbol=led, % Declare the circuit symbol
+    set led graphic={ % Define how to display the circuit symbol
+        circuit symbol lines, % Draw with the `lines` style, not the `wires` style
+        circuit symbol size=width 2 height 2, % The size of the bounding box
+        transform shape}, % The symbol rotates and scales
+    led graphic/.style={
+        append after command={% At the end of the \draw command, do the following
+            \bgroup % Start a new group
+            (1.4\tikzcircuitssizeunit,2.2\tikzcircuitssizeunit) edge[line to,->,>=direction ee] ++(45:1.8\tikzcircuitssizeunit)
+            (2.2\tikzcircuitssizeunit,1.4\tikzcircuitssizeunit) edge[line to,->,>=direction ee] ++(45:1.8\tikzcircuitssizeunit)
+            \egroup% End the group
+        }
+    },
+    led/.style={diode={led graphic}} % The led is just a resistor node with the `led graphics` key
+}
+
+
+
+%light dependent resistor
+%ldr:
+\tikzset{
+    circuit declare symbol=ldr, % Declare the circuit symbol
+    set ldr graphic={ % Define how to display the circuit symbol
+        circuit symbol lines, % Draw with the `lines` style, not the `wires` style
+        circuit symbol size=width 2 height 2, % The size of the bounding box
+        transform shape}, % The symbol rotates and scales
+    ldr graphic/.style={
+        append after command={% At the end of the \draw command, do the following
+            \bgroup % Start a new group
+            (-1.4\tikzcircuitssizeunit,2.2\tikzcircuitssizeunit)++(135:1.8\tikzcircuitssizeunit) edge[line to,->,>=direction ee] ++(-45:1.8\tikzcircuitssizeunit)
+            (-2.2\tikzcircuitssizeunit,1.4\tikzcircuitssizeunit)++(135:1.8\tikzcircuitssizeunit) edge[line to,->,>=direction ee] ++(-45:1.8\tikzcircuitssizeunit)
+            \egroup% End the group
+        }
+    },
+    ldr/.style={resistor={style={circuit symbol size = width 2.5 height 0.7,encapsulated,ldr graphic}}} % The ldr is just an encapsulated resistor node with the `ldr graphics` key
+}
+
+
+%lamp
+\tikzset{circuit declare symbol = lamp,
+  set lamp graphic ={
+    circuit symbol lines, % Draw with the `lines` style, not the `wires` style
+    draw,
+    circuit symbol size=width 4 height 4, % The size of the bounding box
+    generic circle IEC,
+    /pgf/generic circle IEC/before background={
+      \pgfpathmoveto{\pgfpoint{-0.7071pt}{-0.7071pt}}
+      \pgfpathlineto{\pgfpoint{0.7071pt}{0.7071pt}}
+      \pgfpathmoveto{\pgfpoint{-0.7071pt}{0.7071pt}}
+      \pgfpathlineto{\pgfpoint{0.7071pt}{-0.7071pt}}
+      \pgfusepathqstroke}}
+}
+
+
+%ammeter
+%\usepackage{relsize}
+\tikzset{circuit declare symbol = ammeter,
+  set ammeter graphic ={
+    draw,generic circle IEC,
+    circuit symbol size=width 4 height 4, % The size of the bounding box
+    %info=center:\relsize{4}A
+    info=center:A
+  }
+}
+
+
+%voltmeter
+\tikzset{circuit declare symbol = voltmeter,
+  set voltmeter graphic ={
+    draw,generic circle IEC,
+    circuit symbol size=width 4 height 4, % The size of the bounding box
+    info=center:V}
+}
+
+
+% fuse (strikethrough resistor)
+\tikzset{
+    fuse graphic/.style={
+        append after command={% At the end of the \draw command, do the following
+            \bgroup % Start a new group
+                [current point is local=true, % Do not influence the current point on the path
+                every fuse/.try, % If `every fuse` has been defined, use it
+                #1] % Apply options supplied by user
+                (\tikzlastnode.west) edge [line to] (\tikzlastnode.east) % An edge, i.e. an independent path, from the west to the east of the resistor node
+            \egroup% End the group
+        }
+    },
+    fuse/.style={resistor={fuse graphic=#1}} % The fuse is just a resistor node with the `fuse graphics` key
+}
+
+
+%thermistor
+\tikzset{
+    thermistor graphic/.style={
+        append after command={% At the end of the \draw command, do the following
+            \bgroup % Start a new group
+                [current point is local=true, % Do not influence the current point on the path
+                every thermistor/.try, % If `every thermistor` has been defined, use it
+                #1] % Apply options supplied by user
+        let \p1=(\tikzlastnode.north), \p2=(\tikzlastnode.south) in
+          [label distance=1.5\tikzcircuitssizeunit-.5*abs(\y2-\y1),#1]
+          (-0.5\tikzcircuitssizeunit,-1.25\tikzcircuitssizeunit) edge[line to] (-1.5\tikzcircuitssizeunit,-1.25\tikzcircuitssizeunit) edge[line to] (1.5\tikzcircuitssizeunit,1.5\tikzcircuitssizeunit) % An edge, i.e. an independent path, across the resistor node
+            \egroup% End the group
+        }
+    },
+    thermistor/.style={resistor={thermistor graphic=#1}} % The thermistor is just a resistor node with the `themistor graphics` key
+}
+
+
+
+%switch
+\makeatletter
+\pgfdeclareshape{openswitch}
+{
+  \savedanchor\northeast{%
+    \pgfmathsetlength\pgf@xa{\pgfkeysvalueof{/pgf/outer xsep}}%
+    \pgfmathsetlength\pgf@xb{\pgfkeysvalueof{/pgf/minimum width}}%
+    \pgf@x=\pgf@xa%
+    \advance\pgf@x by .5\pgf@xb%
+    \pgf@xc=\pgf@x%
+    \advance\pgf@xc by\pgf@xa%
+    \pgfutil@tempdima=2\pgf@xc%
+    \pgfutil@tempdima=0.083333\pgfutil@tempdima%
+    \advance\pgf@x by\pgfutil@tempdima%
+    \pgfmathsetlength\pgf@ya{\pgfkeysvalueof{/pgf/outer ysep}}%
+    \pgfmathsetlength\pgf@yb{\pgfkeysvalueof{/pgf/minimum height}}%
+    \pgf@y=\pgf@ya%
+    \advance\pgf@y by\pgf@yb%
+    \advance\pgf@y by\pgfutil@tempdima%
+  }
+  \savedanchor\southwest{%
+    \pgfmathsetlength\pgf@xa{\pgfkeysvalueof{/pgf/outer xsep}}%
+    \pgfmathsetlength\pgf@xb{\pgfkeysvalueof{/pgf/minimum width}}%
+    \pgf@x=-.5\pgf@xa%
+    \advance\pgf@x by -.5\pgf@xb%
+    \pgfmathsetlength\pgf@ya{\pgfkeysvalueof{/pgf/outer ysep}}%
+    \pgf@y=-\pgf@ya%
+    \pgf@xc=0.083333\pgf@x%
+    \advance\pgf@y by\pgf@xc%
+  }
+
+  \anchor{center}{\pgfpointorigin}
+  \inheritanchor[from=rectangle ee]{north}
+  \inheritanchor[from=rectangle ee]{south}
+  \inheritanchor[from=rectangle ee]{east}
+  \inheritanchor[from=rectangle ee]{west}
+  \inheritanchor[from=rectangle ee]{north east}
+  \inheritanchor[from=rectangle ee]{north west}
+  \inheritanchor[from=rectangle ee]{south east}
+  \inheritanchor[from=rectangle ee]{south west}
+  \inheritanchor[from=rectangle ee]{input}
+  \inheritanchor[from=rectangle ee]{output}
+
+  \anchorborder{%
+    \ifdim\pgf@y<0pt%
+      % tricky... simpilfy to the origin...
+    \pgf@xc=\pgf@x%
+    \pgf@yc=\pgf@y%
+    \pgf@process{\southwest}%
+    \pgf@xa=\pgf@x%
+    \pgf@ya=\pgf@y
+    \pgf@process{\pgfpointborderrectangle{\pgfqpoint{\pgf@xc}{\the\pgf@yc}}{\pgfqpoint{-\pgf@xa}{-\pgf@ya}}}%
+    \else%
+    \pgf@xc=\pgf@x%
+    \pgf@yc=\pgf@y%
+    \pgf@process{\pgfpointborderrectangle{\pgfqpoint{\pgf@xc}{\the\pgf@yc}}{\northeast}}%
+    \fi%
+  }
+
+  \backgroundpath{ \pgf@process{\pgfpointadd{\northeast}{
+        \pgfpointscale{-1}{\pgfpoint{\pgfkeysvalueof{/pgf/outer
+              xsep}}{\pgfkeysvalueof{/pgf/outer ysep}}}}}
+    \pgf@xa=-\pgf@x \pgf@ya=0pt \pgf@xb=\pgf@x \pgf@yb=\pgf@y
+    \pgf@xc=\pgf@xa \pgfutil@tempdima=2\pgf@xb%
+    \pgfutil@tempdima=0.083333\pgfutil@tempdima%
+    \advance\pgf@xa by \pgfutil@tempdima
+    \advance\pgf@xb by-\pgfutil@tempdima
+    % Circle
+    {\pgfpathcircle{\pgfqpoint{\pgf@xa}{0pt}}{\pgfutil@tempdima}}
+    % Height
+    % Start point
+    \pgf@process{\pgfpointnormalised{\pgfpointdiff{\pgfqpoint{\pgf@xa}{0pt}}{\pgfqpoint{\pgf@xb}{\pgf@yb}}}}
+    \pgf@xc=\pgf@x
+    \pgf@yc=\pgf@y
+    \pgfpathmoveto{\pgfpointadd{\pgfqpoint{\pgf@xa}{0pt}}{%
+        \pgfpointscale{\pgfutil@tempdima}{\pgfqpoint{\pgf@xc}{\pgf@yc}}}}
+    \pgfpathlineto{\pgfqpoint{\pgf@xb}{\pgf@yb}}
+    {\pgfpathcircle{\pgfqpoint{\pgf@xb}{0pt}}{\pgfutil@tempdima}}
+  }
+}
+\makeatother
+\tikzset{
+    circuit declare symbol=open switch, % Declare the circuit symbol
+    set open switch graphic={ % Define how to display the circuit symbol
+        circuit symbol lines, % Draw with the `lines` style, not the `wires` style
+        circuit symbol size=width 4 height 1.2, % The size of the bounding box
+        transform shape, % The symbol rotates and scales
+        shape=openswitch % Use the shape we defined earlier
+    }
+}
+\makeatletter
+\pgfdeclareshape{closedswitch}
+{
+  \savedanchor\northeast{%
+    \pgfmathsetlength\pgf@xa{\pgfkeysvalueof{/pgf/outer xsep}}%
+    \pgfmathsetlength\pgf@xb{\pgfkeysvalueof{/pgf/minimum width}}%
+    \pgf@x=\pgf@xa%
+    \advance\pgf@x by .5\pgf@xb%
+    \pgf@xc=\pgf@x%
+    \advance\pgf@xc by\pgf@xa%
+    \pgfutil@tempdima=2\pgf@xc%
+    \pgfutil@tempdima=0.083333\pgfutil@tempdima%
+    \advance\pgf@x by\pgfutil@tempdima%
+    \pgfmathsetlength\pgf@ya{\pgfkeysvalueof{/pgf/outer ysep}}%
+    \pgfmathsetlength\pgf@yb{\pgfkeysvalueof{/pgf/minimum height}}%
+    \pgf@y=\pgf@ya%
+    \advance\pgf@y by\pgf@yb%
+    \advance\pgf@y by\pgfutil@tempdima%
+  }
+  \savedanchor\southwest{%
+    \pgfmathsetlength\pgf@xa{\pgfkeysvalueof{/pgf/outer xsep}}%
+    \pgfmathsetlength\pgf@xb{\pgfkeysvalueof{/pgf/minimum width}}%
+    \pgf@x=-.5\pgf@xa%
+    \advance\pgf@x by -.5\pgf@xb%
+    \pgfmathsetlength\pgf@ya{\pgfkeysvalueof{/pgf/outer ysep}}%
+    \pgf@y=-\pgf@ya%
+    \pgf@xc=0.083333\pgf@x%
+    \advance\pgf@y by\pgf@xc%
+  }
+
+  \anchor{center}{\pgfpointorigin}
+  \inheritanchor[from=rectangle ee]{north}
+  \inheritanchor[from=rectangle ee]{south}
+  \inheritanchor[from=rectangle ee]{east}
+  \inheritanchor[from=rectangle ee]{west}
+  \inheritanchor[from=rectangle ee]{north east}
+  \inheritanchor[from=rectangle ee]{north west}
+  \inheritanchor[from=rectangle ee]{south east}
+  \inheritanchor[from=rectangle ee]{south west}
+  \inheritanchor[from=rectangle ee]{input}
+  \inheritanchor[from=rectangle ee]{output}
+
+  \anchorborder{%
+    \ifdim\pgf@y<0pt%
+      % tricky... simpilfy to the origin...
+    \pgf@xc=\pgf@x%
+    \pgf@yc=\pgf@y%
+    \pgf@process{\southwest}%
+    \pgf@xa=\pgf@x%
+    \pgf@ya=\pgf@y
+    \pgf@process{\pgfpointborderrectangle{\pgfqpoint{\pgf@xc}{\the\pgf@yc}}{\pgfqpoint{-\pgf@xa}{-\pgf@ya}}}%
+    \else%
+    \pgf@xc=\pgf@x%
+    \pgf@yc=\pgf@y%
+    \pgf@process{\pgfpointborderrectangle{\pgfqpoint{\pgf@xc}{\the\pgf@yc}}{\northeast}}%
+    \fi%
+  }
+
+  \backgroundpath{ \pgf@process{\pgfpointadd{\northeast}{
+        \pgfpointscale{-1}{\pgfpoint{\pgfkeysvalueof{/pgf/outer
+              xsep}}{\pgfkeysvalueof{/pgf/outer ysep}}}}}
+    \pgf@xa=-\pgf@x \pgf@ya=0pt \pgf@xb=\pgf@x \pgf@yb=\pgf@y
+    \pgf@xc=\pgf@xa \pgfutil@tempdima=2\pgf@xb%
+    \pgfutil@tempdima=0.083333\pgfutil@tempdima%
+    \advance\pgf@xa by \pgfutil@tempdima
+    \advance\pgf@xb by-\pgfutil@tempdima
+    % Circle
+    {\pgfpathcircle{\pgfqpoint{\pgf@xa}{0pt}}{\pgfutil@tempdima}}
+    % Height
+    % Start point
+    \pgf@process{\pgfpointnormalised{\pgfpointdiff{\pgfqpoint{\pgf@xa}{0pt}}{\pgfqpoint{\pgf@xb}{\pgf@yb}}}}
+    \pgf@xc=\pgf@x
+    \pgf@yc=\pgf@y
+    \pgfpathmoveto{\pgfpointadd{\pgfqpoint{\pgf@xa}{0pt}}{%
+        \pgfpointscale{\pgfutil@tempdima}{\pgfqpoint{\pgf@xc}{\pgf@yc}}}}
+    \pgfpathlineto{\pgfqpoint{\pgf@xb}{\pgfutil@tempdima}}
+    {\pgfpathcircle{\pgfqpoint{\pgf@xb}{0pt}}{\pgfutil@tempdima}}
+  }
+}
+\makeatother
+\tikzset{
+    circuit declare symbol=closed switch, % Declare the circuit symbol
+    set closed switch graphic={ % Define how to display the circuit symbol
+        circuit symbol lines, % Draw with the `lines` style, not the `wires` style
+        circuit symbol size=width 4 height 1.2, % The size of the bounding box
+        transform shape, % The symbol rotates and scales
+        shape=closedswitch % Use the shape we defined earlier
+    }
+}
+
+
+
+%cell
+\makeatletter
+\pgfdeclareshape{single cell}
+{
+  \inheritsavedanchors[from=rectangle ee]
+  \inheritanchor[from=rectangle ee]{center}
+  \inheritanchor[from=rectangle ee]{north}
+  \inheritanchor[from=rectangle ee]{south}
+  \inheritanchor[from=rectangle ee]{east}
+  \inheritanchor[from=rectangle ee]{west}
+  \inheritanchor[from=rectangle ee]{north east}
+  \inheritanchor[from=rectangle ee]{north west}
+  \inheritanchor[from=rectangle ee]{south east}
+  \inheritanchor[from=rectangle ee]{south west}
+  \inheritanchor[from=rectangle ee]{input}
+  \inheritanchor[from=rectangle ee]{output}
+  \inheritanchorborder[from=rectangle ee]
+
+  \backgroundpath{
+    \pgf@process{\pgfpointadd{\southwest}{\pgfpoint{\pgfkeysvalueof{/pgf/outer xsep}}{\pgfkeysvalueof{/pgf/outer ysep}}}}
+    \pgf@xa=\pgf@x \pgf@ya=\pgf@y
+    \pgf@process{\pgfpointadd{\northeast}{\pgfpointscale{-1}{\pgfpoint{\pgfkeysvalueof{/pgf/outer xsep}}{\pgfkeysvalueof{/pgf/outer ysep}}}}}
+    \pgf@xb=\pgf@x \pgf@yb=\pgf@y
+    % First line, simple
+    \pgfpathmoveto{\pgfqpoint{\pgf@xa}{\pgf@ya}}
+    \pgfpathlineto{\pgfqpoint{\pgf@xa}{\pgf@yb}}
+    % Make smaller
+    \pgfmathsetlength\pgf@yc{.25\pgf@yb-.25\pgf@ya}
+    \advance\pgf@ya by\pgf@yc
+    \advance\pgf@yb by-\pgf@yc
+    \pgfmathsetlength\pgf@xc{0.3\pgf@yb-0.3\pgf@ya}
+    \pgfpathmoveto{\pgfqpoint{\pgf@xb}{\pgf@ya}}
+    \pgfpathlineto{\pgfqpoint{\pgf@xb}{\pgf@yb}}
+    \advance\pgf@xb by-\pgf@xc
+    \pgfpathlineto{\pgfqpoint{\pgf@xb}{\pgf@yb}}
+    \pgfpathlineto{\pgfqpoint{\pgf@xb}{\pgf@ya}}
+    \advance\pgf@xb by\pgf@xc
+    \pgfpathlineto{\pgfqpoint{\pgf@xb}{\pgf@ya}}
+  }
+}
+\makeatother
+\tikzset{
+    circuit declare symbol=cell, % Declare the circuit symbol
+    set cell graphic={ % Define how to display the circuit symbol
+        circuit symbol open, % Draw with the `lines` style, not the `wires` style
+        circuit symbol size=width 1 height 3, % The size of the bounding box
+        transform shape, % The symbol rotates and scales
+        shape=single cell % Use the shape we defined earlier
+    }
+}
+\tikzstyle{every cell}=[fill=black]
+
+
+
+%battery
+\makeatletter
+\pgfdeclareshape{battery}
+{
+  \inheritsavedanchors[from=rectangle ee]
+  \inheritanchor[from=rectangle ee]{center}
+  \inheritanchor[from=rectangle ee]{north}
+  \inheritanchor[from=rectangle ee]{south}
+  \inheritanchor[from=rectangle ee]{east}
+  \inheritanchor[from=rectangle ee]{west}
+  \inheritanchor[from=rectangle ee]{north east}
+  \inheritanchor[from=rectangle ee]{north west}
+  \inheritanchor[from=rectangle ee]{south east}
+  \inheritanchor[from=rectangle ee]{south west}
+  \inheritanchor[from=rectangle ee]{input}
+  \inheritanchor[from=rectangle ee]{output}
+  \inheritanchorborder[from=rectangle ee]
+
+  \backgroundpath{
+    \pgf@process{\pgfpointadd{\southwest}{\pgfpoint{\pgfkeysvalueof{/pgf/outer xsep}}{\pgfkeysvalueof{/pgf/outer ysep}}}}
+    \pgf@xa=\pgf@x \pgf@ya=\pgf@y
+    \pgf@process{\pgfpointadd{\northeast}{\pgfpointscale{-1}{\pgfpoint{\pgfkeysvalueof{/pgf/outer xsep}}{\pgfkeysvalueof{/pgf/outer ysep}}}}}
+    \pgf@xb=\pgf@x \pgf@yb=\pgf@y
+    % First line, simple
+    %left cell long line
+    \pgfpathmoveto{\pgfqpoint{\pgf@xa}{\pgf@ya}}
+    \pgfpathlineto{\pgfqpoint{\pgf@xa}{\pgf@yb}}
+    %set dx
+    \pgfmathsetlength\pgf@xc{0.778\pgf@xb-0.778\pgf@xa}
+    \advance\pgf@xa by\pgf@xc
+    %right cell long line
+    \pgfpathmoveto{\pgfqpoint{\pgf@xa}{\pgf@ya}}
+    \pgfpathlineto{\pgfqpoint{\pgf@xa}{\pgf@yb}}
+%    \advance\pgf@xa by-\pgf@xc %reset to original value
+    % Make smaller
+    \pgfmathsetlength\pgf@yc{.25\pgf@yb-.25\pgf@ya}
+    \advance\pgf@ya by\pgf@yc
+    \advance\pgf@yb by-\pgf@yc
+    \pgfmathsetlength\pgf@xc{0.3\pgf@yb-0.3\pgf@ya}
+    \pgfpathmoveto{\pgfqpoint{\pgf@xb}{\pgf@ya}}
+    %draw small fat line right cell
+    \pgfpathlineto{\pgfqpoint{\pgf@xb}{\pgf@yb}}
+    \advance\pgf@xb by-\pgf@xc
+    \pgfpathlineto{\pgfqpoint{\pgf@xb}{\pgf@yb}}
+    \pgfpathlineto{\pgfqpoint{\pgf@xb}{\pgf@ya}}
+    \advance\pgf@xb by\pgf@xc
+    \pgfpathlineto{\pgfqpoint{\pgf@xb}{\pgf@ya}}
+    %set dx
+    \pgfmathsetlength\pgf@xc{3.5\pgf@xb-3.5\pgf@xa}
+    \advance\pgf@xb by-\pgf@xc
+    \pgfmathsetlength\pgf@xc{0.3\pgf@yb-0.3\pgf@ya}
+    \pgfpathmoveto{\pgfqpoint{\pgf@xb}{\pgf@ya}}
+    %draw small fat line left cell
+    \pgfpathlineto{\pgfqpoint{\pgf@xb}{\pgf@yb}}
+    \advance\pgf@xb by-\pgf@xc
+    \pgfpathlineto{\pgfqpoint{\pgf@xb}{\pgf@yb}}
+    \pgfpathlineto{\pgfqpoint{\pgf@xb}{\pgf@ya}}
+    \advance\pgf@xb by\pgf@xc
+    \pgfpathlineto{\pgfqpoint{\pgf@xb}{\pgf@ya}}
+    %    \advance\pgf@xb by+\pgf@xc %reset
+    \pgfmathsetlength\pgf@yc{0.5\pgf@yb-0.5\pgf@ya}
+    \advance\pgf@ya by\pgf@yc
+    \pgfmathsetlength\pgf@xc{0.15\pgf@xa-0.15\pgf@xb}
+    \pgfmathsetlength\pgf@yc{0.1\pgf@xa-0.1\pgf@xb}
+    \pgfpathmoveto{\pgfqpoint{\pgf@xb}{\pgf@ya}}
+    \advance\pgf@xb by\pgf@xc
+    \pgfpathlineto{\pgfqpoint{\pgf@xb}{\pgf@ya}}
+    \advance\pgf@xb by\pgf@yc
+    \pgfpathmoveto{\pgfqpoint{\pgf@xb}{\pgf@ya}}
+    \advance\pgf@xb by\pgf@xc
+    \pgfpathlineto{\pgfqpoint{\pgf@xb}{\pgf@ya}}
+    \advance\pgf@xb by\pgf@yc
+    \pgfpathmoveto{\pgfqpoint{\pgf@xb}{\pgf@ya}}
+    \advance\pgf@xb by\pgf@xc
+    \pgfpathlineto{\pgfqpoint{\pgf@xb}{\pgf@ya}}
+    \advance\pgf@xb by\pgf@yc
+    \pgfpathmoveto{\pgfqpoint{\pgf@xb}{\pgf@ya}}
+    \advance\pgf@xb by\pgf@xc
+    \pgfpathlineto{\pgfqpoint{\pgf@xb}{\pgf@ya}}
+  }
+}
+\makeatother
+\tikzset{
+    circuit declare symbol=batt, % Declare the circuit symbol
+    set batt graphic={ % Define how to display the circuit symbol
+        circuit symbol open, % Draw with the `lines` style, not the `wires` style
+        circuit symbol size=width 4.5 height 3, % The size of the bounding box
+        transform shape, % The symbol rotates and scales
+        shape=battery % Use the shape we defined earlier
+    }
+}
+\tikzstyle{every batt}=[fill=black]
