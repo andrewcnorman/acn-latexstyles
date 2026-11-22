@@ -6,9 +6,10 @@
 %% Bishop Heber High School
 %% Chester Road, MALPAS. SY14 8JD
 
-\ProvidesPackage{acn-particlestyle}
+\ProvidesPackage{acn-circuits}
 
 \RequirePackage{tikz}
+\usetikzlibrary{circuits.ee.IEC}
 
 %resistor
 \tikzstyle{every resistor}=[circuit symbol size = width 4 height 1.2]
@@ -74,6 +75,7 @@
     draw,
     circuit symbol size=width 4 height 4, % The size of the bounding box
     generic circle IEC,
+    transform shape,
     /pgf/generic circle IEC/before background={
       \pgfpathmoveto{\pgfpoint{-0.7071pt}{-0.7071pt}}
       \pgfpathlineto{\pgfpoint{0.7071pt}{0.7071pt}}
@@ -91,6 +93,14 @@
     circuit symbol size=width 4 height 4, % The size of the bounding box
     %info=center:\relsize{4}A
     info=center:A
+  }
+}
+\tikzset{circuit declare symbol = milliammeter,
+  set milliammeter graphic ={
+    draw,generic circle IEC,
+    circuit symbol size=width 4 height 4, % The size of the bounding box
+    %info=center:\relsize{4}A
+    info=center:mA
   }
 }
 

@@ -1,0 +1,19 @@
+\def\the@base{red}
+\DeclareOptionBeamer{base}{\def\the@base{#1}}
+\ProcessOptionsBeamer
+
+\mode<presentation>
+
+\useinnertheme{radleykeys}
+\useoutertheme{radleykeys}
+\usecolortheme[base=\the@base]{radleykeys}
+%\usefonttheme{radleykeys}
+
+\mode
+<all>
+
+\providecommand{\ccbyncsa}{\fontsize{9pt}{10pt}\selectfont \noindent \includegraphics[width=0.7cm]{cc.pdf}\hspace{0.5em}\includegraphics[width=0.7cm]{by.pdf}\hspace{0.5em}\includegraphics[width=0.7cm]{nc.pdf}\hspace{0.5em}\includegraphics[width=0.7cm]{sa.pdf}\hspace{0.5em}\begin{minipage}[b]{8cm} \renewcommand{\sfdefault}{phv} \sffamily \color{black}{Except where otherwise noted, this work is licensed under}
+
+\smallskip
+
+\renewcommand\UrlFont{\color{black}\sffamily\bfseries} \url{http://creativecommons.org/licenses/by-nc-sa/4.0/}\end{minipage}}

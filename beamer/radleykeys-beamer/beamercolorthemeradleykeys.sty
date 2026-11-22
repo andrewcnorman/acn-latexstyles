@@ -1,0 +1,61 @@
+\usepackage{radleykeyscolours}
+
+\def\beamer@theme@base@red{
+  \definecolor{RadleyCore}{named}{RadleyCoreRed}
+  \definecolor{RadleyLight}{named}{RadleyLightRed}
+  \definecolor{RadleyDark}{named}{RadleyDarkRed}
+}
+\def\beamer@theme@base@orange{
+  \definecolor{RadleyCore}{named}{RadleyCoreOrange}
+  \definecolor{RadleyLight}{named}{RadleyLightOrange}
+  \definecolor{RadleyDark}{named}{RadleyDarkOrange}
+}
+\def\beamer@theme@base@purple{
+  \definecolor{RadleyCore}{named}{RadleyCorePurple}
+  \definecolor{RadleyLight}{named}{RadleyLightPurple}
+  \definecolor{RadleyDark}{named}{RadleyDarkPurple}
+}
+\def\beamer@theme@base@green{
+  \definecolor{RadleyCore}{named}{RadleyCoreGreen}
+  \definecolor{RadleyLight}{named}{RadleyLightGreen}
+  \definecolor{RadleyDark}{named}{RadleyDarkGreen}
+}
+\def\beamer@theme@base@teal{
+  \definecolor{RadleyCore}{named}{RadleyCoreTeal}
+  \definecolor{RadleyLight}{named}{RadleyLightTeal}
+  \definecolor{RadleyDark}{named}{RadleyDarkTeal}
+}
+
+\beamer@theme@base@red
+\DeclareOptionBeamer{base}{\csname beamer@theme@base@#1\endcsname}
+\ProcessOptionsBeamer
+
+\mode<presentation>
+
+\setbeamercolor*{normal text}{fg=RadleyDark,bg=white}
+\setbeamercolor*{structure}{fg=RadleyDark}
+
+\setbeamercolor*{palette primary}{fg=white,bg=RadleyCore}
+\setbeamercolor*{palette secondary}{fg=white,bg=RadleyDark}
+\setbeamercolor*{palette tertiary}{fg=white,bg=RadleyLight}%!40!white}
+\setbeamercolor*{palette quaternary}{fg=white,bg=RadleyLight}%!40!white}
+
+\setbeamercolor*{title}{fg=white,bg=RadleyCore}
+\setbeamercolor*{author}{fg=white,bg=RadleyDark}
+\setbeamercolor*{institute}{parent=author}
+\setbeamercolor*{date}{fg=white,bg=RadleyLight}
+\setbeamercolor*{abstract}{parent=author}
+
+\setbeamercolor*{lower separation line head}{fg=white,bg=RadleyLight}%!80!black}
+
+\setbeamercolor*{special page canvas}{bg=RadleyLight}
+\setbeamercolor*{special page separator upper}{bg=RadleyLight!40!white}
+\setbeamercolor*{special page separator lower}{bg=RadleyLight!40!black}
+\setbeamercolor*{special page title}{fg=white,bg=RadleyLight!80!white}
+
+\setbeamercolor*{block body}{bg=RadleyCore!20!normal text.bg,fg=RadleyDark}
+\setbeamercolor*{block title}{bg=RadleyDark,fg=white}
+
+\setbeamercolor*{alerted text}{fg=RadleyCore}
+
+\mode<all>
